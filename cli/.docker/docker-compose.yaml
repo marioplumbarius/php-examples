@@ -1,8 +1,0 @@
-services:
-  cli:
-    build:
-      context: ../
-      dockerfile: .docker/Dockerfile
-      target: ${APP_ENV:-dev}
-    volumes:
-      - ../src:/app

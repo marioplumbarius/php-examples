@@ -1,6 +1,7 @@
 FROM php:8.2-cli as base
 
-# dependency management
+RUN apt-get update && apt-get install -y git
+
 COPY --from=composer:2.8.6 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /app

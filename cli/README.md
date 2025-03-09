@@ -8,11 +8,11 @@
 ### Dev
 ```bash
 COMPOSE_BAKE=true ENV=dev \
-docker-compose -f .docker/docker-compose.yaml run --build cli
+docker-compose run --build --rm cli
 ```
 
 ### Prod
 ```bash
 COMPOSE_BAKE=true ENV=prod \
-docker-compose -f .docker/docker-compose.yaml run --build cli
+docker-compose run --build --rm cli
 ```
