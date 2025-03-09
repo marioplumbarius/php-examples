@@ -1,0 +1,10 @@
+{
+    "name": "php-examples/cli",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "PhpExamples\\Cli\\": "src/"
+        }
+    },
+    "require": {}
+}

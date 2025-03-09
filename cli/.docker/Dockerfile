@@ -7,7 +7,8 @@ WORKDIR /app
 COPY src /app
 
 FROM base as dev
-# TODO: replace this ENTRYPOINT with a proper command
+RUN composer install --no-interaction --optimize-autoloader
 ENTRYPOINT [ "bash" ]
 
 FROM base as prod
+RUN composer install --no-interaction --optimize-autoloader --no-dev
