@@ -6,5 +6,7 @@
             "PhpExamples\\Cli\\": "src/"
         }
     },
-    "require": {}
+    "require": {
+        "symfony/console": "v7.1.10"
+    }
 }
