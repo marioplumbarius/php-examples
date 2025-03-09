@@ -12,11 +12,11 @@ COPY ./src /app/src
 COPY ./composer.json /app/composer.json
 COPY ./composer.lock /app/composer.lock
 
+ENTRYPOINT [ "bin/console" ]
+CMD [ "list", "root" ]
+
 FROM base as dev
 
 RUN composer install --no-interaction --optimize-autoloader
-ENTRYPOINT [ "bash" ]
 
-FROM base as prod
-
-RUN composer install --no-interaction --optimize-autoloader --no-dev
+# TODO: Add prod target

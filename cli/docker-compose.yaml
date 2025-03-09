@@ -4,6 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile
       target: ${APP_ENV:-dev}
+    image: php-examples/cli
     volumes:
       - ./src:/app/src
       - ./bin:/app/bin

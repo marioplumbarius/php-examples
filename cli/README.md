@@ -4,15 +4,22 @@
 * [Docker](https://docs.docker.com/get-started/get-docker/)
 * [Docker Compose](https://docs.docker.com/compose/)
 
-## Run
-### Dev
+## Development
+### Build
 ```bash
-COMPOSE_BAKE=true ENV=dev \
-docker-compose run --build --rm cli
+COMPOSE_BAKE=true ENV=dev docker-compose build cli
 ```
 
-### Prod
+### Expose dependencies to IDE
+> Note: Run this each time you update the dependencies.
+
 ```bash
-COMPOSE_BAKE=true ENV=prod \
-docker-compose run --build --rm cli
+CONTAINER_ID=$(docker create php-examples/cli)
+docker cp $CONTAINER_ID:/app/vendor ./vendor
+docker rm -v $CONTAINER_ID
+```
+
+### Run
+```bash
+COMPOSE_BAKE=true ENV=dev docker-compose run cli
 ```
