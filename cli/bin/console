@@ -4,11 +4,34 @@
 
 require __DIR__.'/../vendor/autoload.php';
 
-use PhpExamples\Cli\Command\HelloWorldCommand;
 use Symfony\Component\Console\Application;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+
+function setUpContainerBuilder(): ContainerBuilder {
+    // Create and configure the container
+    $containerBuilder = new ContainerBuilder();
+
+    // Load the services configuration
+    $loader = new YamlFileLoader($containerBuilder, new FileLocator(__DIR__.'/../config'));
+    $loader->load('services.yaml');
+
+    // Compile the container (ensures all dependencies are resolved)
+    $containerBuilder->compile();
+
+    return $containerBuilder;
+}
+
+// Find and register all commands automatically
+function registerCommands(Application $application){
+    $containerBuilder = setUpContainerBuilder();
+    $commands = $containerBuilder->findTaggedServiceIds('console.command');
+    foreach ($commands as $id => $tags) {
+        $application->add($containerBuilder->get($id));
+    }
+}
 
 $application = new Application();
-
-$application->add(new HelloWorldCommand());
-
+registerCommands($application);
 $application->run();

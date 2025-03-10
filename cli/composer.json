@@ -7,6 +7,9 @@
         }
     },
     "require": {
-        "symfony/console": "v7.1.10"
+        "symfony/console": "v7.1.10",
+        "symfony/dependency-injection": "v7.2.4",
+        "symfony/config": "v7.2.3",
+        "symfony/yaml": "v7.2.3"
     }
 }

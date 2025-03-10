@@ -1,0 +1,12 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    PhpExamples\Cli\:
+        resource: '../src/'
+    
+    PhpExamples\Cli\Command\:
+        resource: '../src/Command'
+        tags: ['console.command']
+        public: true

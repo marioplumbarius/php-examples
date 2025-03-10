@@ -8,5 +8,6 @@ services:
     volumes:
       - ./src:/app/src
       - ./bin:/app/bin
+      - ./config:/app/config
       - ./composer.json:/app/composer.json
       - ./composer.lock:/app/composer.lock

@@ -14,6 +14,7 @@ COMPOSE_BAKE=true ENV=dev docker-compose build cli
 > Note: Run this each time you update the dependencies.
 
 ```bash
+rm -rf vendor
 CONTAINER_ID=$(docker create php-examples/cli)
 docker cp $CONTAINER_ID:/app/vendor ./vendor
 docker rm -v $CONTAINER_ID
@@ -21,5 +22,5 @@ docker rm -v $CONTAINER_ID
 
 ### Run
 ```bash
-COMPOSE_BAKE=true ENV=dev docker-compose run cli
+COMPOSE_BAKE=true ENV=dev docker-compose run --rm cli
 ```
