@@ -3,7 +3,7 @@ A collection of example PHP applications demonstrating different architectural p
 
 ## Examples
 - [CLI](cli/) - A command-line application built with Symfony Console
-- [Laravel] - A full-stack Laravel application using Sail, React and Inertia.
+- [Laravel](laracel/) - A full-stack Laravel application using Sail, React and Inertia.
 - [Web Server](web/) - Coming soon
 - [API](api/) - Coming soon
 - [Worker](worker/) - Coming soon
