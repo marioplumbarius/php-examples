@@ -26,5 +26,11 @@ export default defineConfig({
         cors: {
             origin: true
         },
+        hmr: {
+            host: 'localhost',
+        },
+        watch: {
+            usePolling: true,
+        },
     }
 });
