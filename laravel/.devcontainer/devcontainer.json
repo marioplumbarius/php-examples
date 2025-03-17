@@ -10,7 +10,7 @@
 		"vscode": {
 			"extensions": [
 				// "mikestead.dotenv",
-				// "amiralizadeh9480.laravel-extra-intellisense",
+				"amiralizadeh9480.laravel-extra-intellisense"
 				// "ryannaddy.laravel-artisan",
 				// "onecentlin.laravel5-snippets",
 				// "onecentlin.laravel-blade"

@@ -33,74 +33,53 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import AppLayout from "@/layouts/app-layout"
-import { Head } from "@inertiajs/react"
+import { Head, router } from "@inertiajs/react"
 import { useState } from "react"
-
-const data: Ticket[] = [
-  {
-    id: "550e8400-e29b-41d4-a716-446655440000",
-    title: "Server Performance Issues",
-    description: "Users reporting slow response times during peak hours",
-    status: "closed",
-    acknowledged: true,
-    assignedTo: "sarah.tech@example.com",
-    createdAt: "2024-03-10T08:00:00Z",
-    updatedAt: "2024-03-12T15:30:00Z"
-  },
-  {
-    id: "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
-    title: "Database Backup Failure",
-    description: "Nightly backup process failed to complete",
-    status: "closed",
-    acknowledged: true,
-    assignedTo: "mike.ops@example.com",
-    createdAt: "2024-03-11T23:00:00Z",
-    updatedAt: "2024-03-12T10:15:00Z"
-  },
-  {
-    id: "7c9e6679-7425-40de-944b-e07fc1f90ae7",
-    title: "User Authentication Bug",
-    description: "Some users unable to login after password reset",
-    status: "in progress",
-    acknowledged: true,
-    assignedTo: "alex.dev@example.com",
-    createdAt: "2024-03-12T09:30:00Z",
-    updatedAt: "2024-03-12T14:45:00Z"
-  },
-  {
-    id: "8f9e5bc6-3e5d-4f3c-b3e9-1d8dcf2c757e",
-    title: "Memory Leak Investigation",
-    description: "Application memory usage increasing over time",
-    status: "closed",
-    acknowledged: true,
-    assignedTo: "emma.debug@example.com",
-    createdAt: "2024-03-09T11:20:00Z",
-    updatedAt: "2024-03-11T16:40:00Z"
-  },
-  {
-    id: "9d3f7bd9-5b1f-4ec5-8c5d-4f4a6d47f393",
-    title: "API Integration Error",
-    description: "Third-party API calls failing intermittently",
-    status: "open",
-    acknowledged: false,
-    assignedTo: "james.api@example.com",
-    createdAt: "2024-03-12T16:00:00Z",
-    updatedAt: "2024-03-12T16:00:00Z"
-  },
-]
 
 export type Ticket = {
   acknowledged: boolean
-  assignedTo: string
-  createdAt: string
+  user: {
+    email: string
+  }
+  created_at: string
   description: string
   id: string
   status: "open" | "in progress" | "closed"
   title: string
-  updatedAt: string
+  updated_at: string
 }
 
-export const columns: ColumnDef<Ticket>[] = [
+const handleAcknowledge = (ticketId: string, setTickets: React.Dispatch<React.SetStateAction<Ticket[]>>) => {
+  router.post(route('tickets.acknowledge', ticketId), {}, {
+    preserveScroll: true,
+    onSuccess: () => {
+      setTickets(prevTickets =>
+        prevTickets.map(ticket =>
+          ticket.id === ticketId
+            ? { ...ticket, acknowledged: true }
+            : ticket
+        )
+      )
+    }
+  })
+}
+
+const handleClose = (ticketId: string, setTickets: React.Dispatch<React.SetStateAction<Ticket[]>>) => {
+  router.post(route('tickets.close', ticketId), {}, {
+    preserveScroll: true,
+    onSuccess: () => {
+      setTickets(prevTickets =>
+        prevTickets.map(ticket =>
+          ticket.id === ticketId
+            ? { ...ticket, status: "closed" as const }
+            : ticket
+        )
+      )
+    }
+  })
+}
+
+export const createColumns = (setTicketsState: React.Dispatch<React.SetStateAction<Ticket[]>>): ColumnDef<Ticket>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -138,23 +117,23 @@ export const columns: ColumnDef<Ticket>[] = [
     ),
   },
   {
-    accessorKey: "createdAt",
+    accessorKey: "created_at",
     header: "Created At",
     cell: ({ row }) => (
-      <div>{row.getValue("createdAt")}</div>
+      <div>{row.getValue("created_at")}</div>
     ),
   },
   {
-    accessorKey: "updatedAt",
+    accessorKey: "updated_at",
     header: "Updated At",
     cell: ({ row }) => (
-      <div>{row.getValue("updatedAt")}</div>
+      <div>{row.getValue("updated_at")}</div>
     ),
   },
   {
-    accessorKey: "assignedTo",
-    header: "Assigned To",
-    cell: ({ row }) => <div className="lowercase">{row.getValue("assignedTo")}</div>,
+    accessorKey: "User Email",
+    header: "User Email",
+    cell: ({ row }) => <div className="lowercase">{row.original.user.email}</div>,
   },
   {
     accessorKey: "acknowledged",
@@ -173,18 +152,30 @@ export const columns: ColumnDef<Ticket>[] = [
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
+      const ticket = row.original
+
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-8 w-8 p-0">
               <span className="sr-only">Open menu</span>
-              <MoreHorizontal />
+              <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem>Acknowledge</DropdownMenuItem>
-            <DropdownMenuItem>Close</DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => handleAcknowledge(ticket.id, setTicketsState)}
+              disabled={ticket.acknowledged}
+            >
+              Acknowledge
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => handleClose(ticket.id, setTicketsState)}
+              disabled={ticket.status === "closed"}
+            >
+              Close
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       )
@@ -192,7 +183,11 @@ export const columns: ColumnDef<Ticket>[] = [
   },
 ]
 
-export default function DataTableDemo() {
+export default function Tickets({ tickets }: { tickets: any }) {
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 5,
+  })
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
     []
@@ -200,14 +195,18 @@ export default function DataTableDemo() {
   const [columnVisibility, setColumnVisibility] =
     useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = useState({})
+  const [ticketsState, setTicketsState] = useState<Ticket[]>(tickets)
+
+  const columns = createColumns(setTicketsState)
 
   const table = useReactTable({
-    data,
+    data: ticketsState,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    onPaginationChange: setPagination,
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
@@ -217,12 +216,13 @@ export default function DataTableDemo() {
       columnFilters,
       columnVisibility,
       rowSelection,
+      pagination,
     },
   })
 
   return (
     <AppLayout>
-      <Head title="Dashboard" />
+      <Head title="Tickets" />
       <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
         <div className="w-full">
           <div className="flex items-center py-4">
